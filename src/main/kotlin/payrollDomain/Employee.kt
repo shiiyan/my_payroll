@@ -24,7 +24,7 @@ class Employee(
             itsEmpId = empId,
             itsName = name,
             itsAddress = address,
-            itsClassification = SalariedClassification(),
+            itsClassification = SalariedClassification(0.0),
             itsPaymentMethod = DirectMethod(),
             itsSchedule = MonthlySchedule(),
             itsAffiliation = NoAffiliation()
