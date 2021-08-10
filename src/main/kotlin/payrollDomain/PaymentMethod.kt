@@ -1,3 +1,5 @@
 package payrollDomain
 
-interface PaymentMethod
+interface PaymentMethod {
+    fun pay(pc: Paycheck)
+}

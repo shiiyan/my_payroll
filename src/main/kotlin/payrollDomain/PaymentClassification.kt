@@ -1,3 +1,5 @@
 package payrollDomain
 
-interface PaymentClassification
+interface PaymentClassification {
+    fun calculatePay(pc: Paycheck): Double
+}
