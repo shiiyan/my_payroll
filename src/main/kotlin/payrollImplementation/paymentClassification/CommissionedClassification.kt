@@ -7,7 +7,7 @@ import java.util.Calendar
 class CommissionedClassification(
     val itsSalary: Double,
     val itsCommissionRate: Double,
-    private val itsReceipts: MutableMap<Calendar, SalesReceipt>
+    private val itsReceipts: MutableMap<Calendar, SalesReceipt> = mutableMapOf()
 ) : PaymentClassification {
     fun addSaleReceipt(saleDate: Calendar, amount: Double) {
         itsReceipts[saleDate] = SalesReceipt(itsSaleDate = saleDate, itsAmount = amount)
@@ -16,7 +16,7 @@ class CommissionedClassification(
     fun getReceipt(date: Calendar) = itsReceipts[date]
 
     override fun calculatePay(pc: Paycheck): Double {
-        var commission = 0.0
+        var commission = 0.00
         for (receipt in itsReceipts.values) {
             if (receipt.itsSaleDate in (pc.payPeriodStartDate..pc.payPeriodEndDate)) {
                 commission += receipt.itsAmount * itsCommissionRate

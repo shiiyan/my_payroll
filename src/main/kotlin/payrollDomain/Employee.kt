@@ -2,7 +2,7 @@ package payrollDomain
 
 import payrollImplementation.affiliation.NoAffiliation
 import payrollImplementation.paymentClassification.SalariedClassification
-import payrollImplementation.paymentMethod.DirectMethod
+import payrollImplementation.paymentMethod.HoldMethod
 import payrollImplementation.paymentSchedule.MonthlySchedule
 import java.util.Calendar
 
@@ -24,8 +24,8 @@ class Employee(
             itsEmpId = empId,
             itsName = name,
             itsAddress = address,
-            itsClassification = SalariedClassification(0.0),
-            itsPaymentMethod = DirectMethod(),
+            itsClassification = SalariedClassification(0.00),
+            itsPaymentMethod = HoldMethod(),
             itsSchedule = MonthlySchedule(),
             itsAffiliation = NoAffiliation()
         )
