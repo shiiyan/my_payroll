@@ -1,0 +1,5 @@
+package payrollImplementation.paymentClassification
+
+import payrollDomain.PaymentClassification
+
+class SalariedClassification : PaymentClassification
