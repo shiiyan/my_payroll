@@ -12,6 +12,8 @@ class PayrollDatabase {
 
         fun getEmployee(empId: Int) = itsEmployees[empId]
 
+        fun deleteEmployee(empId: Int) = itsEmployees.remove(empId)
+
         fun clear() {
             itsEmployees.clear()
         }

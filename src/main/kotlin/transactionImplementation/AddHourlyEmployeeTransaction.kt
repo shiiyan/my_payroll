@@ -6,7 +6,7 @@ import payrollImplementation.paymentClassification.HourlyClassification
 import payrollImplementation.paymentSchedule.WeeklySchedule
 import transactionAbstraction.AddEmployeeTransaction
 
-class AddHourlyEmployee(
+class AddHourlyEmployeeTransaction(
     empId: Int,
     name: String,
     address: String,

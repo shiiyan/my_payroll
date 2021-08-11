@@ -6,7 +6,7 @@ import payrollImplementation.paymentClassification.SalariedClassification
 import payrollImplementation.paymentSchedule.MonthlySchedule
 import transactionAbstraction.AddEmployeeTransaction
 
-class AddSalariedEmployee(
+class AddSalariedEmployeeTransaction(
     empId: Int,
     name: String,
     address: String,

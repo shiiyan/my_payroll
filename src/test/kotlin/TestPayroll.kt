@@ -1,3 +1,4 @@
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import payrollDatabase.PayrollDatabase
 import payrollImplementation.paymentClassification.CommissionedClassification
@@ -7,18 +8,25 @@ import payrollImplementation.paymentMethod.HoldMethod
 import payrollImplementation.paymentSchedule.BiweeklySchedule
 import payrollImplementation.paymentSchedule.MonthlySchedule
 import payrollImplementation.paymentSchedule.WeeklySchedule
-import transactionImplementation.AddCommissionedEmployee
-import transactionImplementation.AddHourlyEmployee
-import transactionImplementation.AddSalariedEmployee
+import transactionImplementation.AddCommissionedEmployeeTransaction
+import transactionImplementation.AddHourlyEmployeeTransaction
+import transactionImplementation.AddSalariedEmployeeTransaction
+import transactionImplementation.DeleteEmployeeTransaction
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 class TestPayroll {
+    @BeforeEach
+    fun setUp() {
+        PayrollDatabase.clear()
+    }
+
     @Test
     fun testAddSalariedEmployee() {
         println("TestAddSalariedEmployee")
         val empId = 1
-        val t = AddSalariedEmployee(empId, "Bob", "Home", 1000.00)
+        val t = AddSalariedEmployeeTransaction(empId, "Bob", "Home", 1000.00)
         t.execute()
 
         val e = PayrollDatabase.getEmployee(empId)
@@ -37,7 +45,7 @@ class TestPayroll {
     fun testAddHourlyEmployee() {
         println("TestAddHourlyEmployee")
         val empId = 2
-        val t = AddHourlyEmployee(empId, "Bill", "Home", 15.25)
+        val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
         t.execute()
 
         val e = PayrollDatabase.getEmployee(empId)
@@ -56,7 +64,7 @@ class TestPayroll {
     fun testAddCommissionedEmployee() {
         println("TestAddCommissionedEmployee")
         val empId = 3
-        val t = AddCommissionedEmployee(empId, "Lance", "Home", 2500.00, 3.2)
+        val t = AddCommissionedEmployeeTransaction(empId, "Lance", "Home", 2500.00, 3.2)
         t.execute()
 
         val e = PayrollDatabase.getEmployee(empId)
@@ -70,5 +78,22 @@ class TestPayroll {
         assertNotNull(bs)
         val hm = e.itsPaymentMethod as HoldMethod
         assertNotNull(hm)
+    }
+
+    @Test
+    fun testDeleteEmployee() {
+        println("TestDeleteEmployee")
+        val empId = 3
+        val t = AddCommissionedEmployeeTransaction(empId, "Lance", "Home", 2500.00, 3.2)
+        t.execute()
+
+        val e = PayrollDatabase.getEmployee(empId)
+        assertNotNull(e)
+
+        val dt = DeleteEmployeeTransaction(e.itsEmpId)
+        dt.execute()
+
+        val de = PayrollDatabase.getEmployee(e.itsEmpId)
+        assertNull(de)
     }
 }

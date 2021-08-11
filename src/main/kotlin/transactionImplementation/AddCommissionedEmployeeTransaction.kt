@@ -6,7 +6,7 @@ import payrollImplementation.paymentClassification.CommissionedClassification
 import payrollImplementation.paymentSchedule.BiweeklySchedule
 import transactionAbstraction.AddEmployeeTransaction
 
-class AddCommissionedEmployee(
+class AddCommissionedEmployeeTransaction(
     empId: Int,
     name: String,
     address: String,
