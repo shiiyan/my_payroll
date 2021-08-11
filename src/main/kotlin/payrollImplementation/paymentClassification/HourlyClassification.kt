@@ -12,6 +12,8 @@ class HourlyClassification(
         itsTimeCards[date] = TimeCard(itsDate = date, itsHours = hours)
     }
 
+    fun getTimeCard(date: Calendar) = itsTimeCards[date]
+
     override fun calculatePay(pc: Paycheck): Double {
         var totalPay = 0.00
         for (tc in itsTimeCards.values) {

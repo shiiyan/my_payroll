@@ -11,7 +11,9 @@ import payrollImplementation.paymentSchedule.WeeklySchedule
 import transactionImplementation.AddCommissionedEmployeeTransaction
 import transactionImplementation.AddHourlyEmployeeTransaction
 import transactionImplementation.AddSalariedEmployeeTransaction
+import transactionImplementation.AddTimeCardTransaction
 import transactionImplementation.DeleteEmployeeTransaction
+import java.util.Calendar
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -95,5 +97,25 @@ class TestPayroll {
 
         val de = PayrollDatabase.getEmployee(e.itsEmpId)
         assertNull(de)
+    }
+
+    @Test
+    fun testAddTimeCardTransaction() {
+        println("TestAddTimeCard")
+        val empId = 2
+        val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
+        t.execute()
+        val defaultDate = Calendar.getInstance()
+        defaultDate.set(2021, 8, 11)
+        val tct = AddTimeCardTransaction(defaultDate, 8.00, empId)
+        tct.execute()
+
+        val e = PayrollDatabase.getEmployee(empId)
+        assertNotNull(e)
+        val hc = e.itsClassification as HourlyClassification
+        assertNotNull(hc)
+        val tc = hc.getTimeCard(defaultDate)
+        assertNotNull(tc)
+        assertEquals(8.00, tc.itsHours)
     }
 }
