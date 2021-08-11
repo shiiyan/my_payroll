@@ -1,21 +1,21 @@
 package transactionImplementation
 
 import payrollDatabase.PayrollDatabase
-import payrollImplementation.paymentClassification.HourlyClassification
+import payrollImplementation.paymentClassification.CommissionedClassification
 import transaction.Transaction
 import java.util.Calendar
 
-class AddTimeCardTransaction(
-    private val itsDate: Calendar,
-    private val itsHours: Double,
+class AddSalesReceiptTransaction(
+    private val itsSaleDate: Calendar,
+    private val itsAmount: Double,
     private val itsEmpId: Int
 ) : Transaction {
     override fun execute() {
         val e = PayrollDatabase.getEmployee(empId = itsEmpId) ?: throw RuntimeException("No such employee.")
 
-        val hc = e.itsClassification as? HourlyClassification
+        val cc = e.itsClassification as? CommissionedClassification
             ?: throw RuntimeException("Tried to add timecard to non-hourly employee.")
 
-        hc.addTimeCard(date = itsDate, hours = itsHours)
+        cc.addSaleReceipt(saleDate = itsSaleDate, amount = itsAmount)
     }
 }

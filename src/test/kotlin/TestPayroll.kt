@@ -11,6 +11,7 @@ import payrollImplementation.paymentSchedule.WeeklySchedule
 import transactionImplementation.AddCommissionedEmployeeTransaction
 import transactionImplementation.AddHourlyEmployeeTransaction
 import transactionImplementation.AddSalariedEmployeeTransaction
+import transactionImplementation.AddSalesReceiptTransaction
 import transactionImplementation.AddTimeCardTransaction
 import transactionImplementation.DeleteEmployeeTransaction
 import java.util.Calendar
@@ -117,5 +118,25 @@ class TestPayroll {
         val tc = hc.getTimeCard(defaultDate)
         assertNotNull(tc)
         assertEquals(8.00, tc.itsHours)
+    }
+
+    @Test
+    fun testAddSalesReceiptTransaction() {
+        println("TestAddSalesReceipt")
+        val empId = 3
+        val t = AddCommissionedEmployeeTransaction(empId, "Lance", "Home", 2500.00, 3.2)
+        t.execute()
+        val defaultDate = Calendar.getInstance()
+        defaultDate.set(2021, 8, 11)
+        val srt = AddSalesReceiptTransaction(defaultDate, 25000.00, empId)
+        srt.execute()
+
+        val e = PayrollDatabase.getEmployee(empId)
+        assertNotNull(e)
+        val cc = e.itsClassification as CommissionedClassification
+        assertNotNull(cc)
+        val sr = cc.getReceipt(defaultDate)
+        assertNotNull(sr)
+        assertEquals(25000.00, sr.itsAmount)
     }
 }
