@@ -1,6 +1,7 @@
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import payrollDatabase.PayrollDatabase
+import payrollImplementation.affiliation.UnionAffiliation
 import payrollImplementation.paymentClassification.CommissionedClassification
 import payrollImplementation.paymentClassification.HourlyClassification
 import payrollImplementation.paymentClassification.SalariedClassification
@@ -12,6 +13,7 @@ import transactionImplementation.AddCommissionedEmployeeTransaction
 import transactionImplementation.AddHourlyEmployeeTransaction
 import transactionImplementation.AddSalariedEmployeeTransaction
 import transactionImplementation.AddSalesReceiptTransaction
+import transactionImplementation.AddServiceChargeTransaction
 import transactionImplementation.AddTimeCardTransaction
 import transactionImplementation.DeleteEmployeeTransaction
 import java.util.Calendar
@@ -121,7 +123,7 @@ class TestPayroll {
     }
 
     @Test
-    fun testAddSalesReceiptTransaction() {
+    fun testAddSalesReceipt() {
         println("TestAddSalesReceipt")
         val empId = 3
         val t = AddCommissionedEmployeeTransaction(empId, "Lance", "Home", 2500.00, 3.2)
@@ -138,5 +140,30 @@ class TestPayroll {
         val sr = cc.getReceipt(defaultDate)
         assertNotNull(sr)
         assertEquals(25000.00, sr.itsAmount)
+    }
+
+    @Test
+    fun testAddServiceCharge() {
+        println("TestAddServiceCharge")
+        val empId = 2
+        val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
+        t.execute()
+        val defaultDate = Calendar.getInstance()
+        defaultDate.set(2021, 8, 11)
+        val tct = AddTimeCardTransaction(defaultDate, 8.00, empId)
+        tct.execute()
+
+        val e = PayrollDatabase.getEmployee(empId)
+        assertNotNull(e)
+
+        val memberId = 86
+        e.itsAffiliation = UnionAffiliation(12.50, memberId)
+        PayrollDatabase.addUnionMember(memberId, e)
+        val sct = AddServiceChargeTransaction(memberId, defaultDate, 12.95)
+        sct.execute()
+
+        val ua = e.itsAffiliation as UnionAffiliation
+        val sc = ua.getServiceCharge(defaultDate)
+        assertEquals(12.95, sc)
     }
 }

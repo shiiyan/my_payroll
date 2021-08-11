@@ -9,7 +9,7 @@ class CommissionedClassification(
     val itsCommissionRate: Double,
     private val itsReceipts: MutableMap<Calendar, SalesReceipt> = mutableMapOf()
 ) : PaymentClassification {
-    fun addSaleReceipt(saleDate: Calendar, amount: Double) {
+    fun addSalesReceipt(saleDate: Calendar, amount: Double) {
         itsReceipts[saleDate] = SalesReceipt(itsSaleDate = saleDate, itsAmount = amount)
     }
 

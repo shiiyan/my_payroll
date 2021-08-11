@@ -16,6 +16,6 @@ class AddSalesReceiptTransaction(
         val cc = e.itsClassification as? CommissionedClassification
             ?: throw RuntimeException("Tried to add timecard to non-hourly employee.")
 
-        cc.addSaleReceipt(saleDate = itsSaleDate, amount = itsAmount)
+        cc.addSalesReceipt(saleDate = itsSaleDate, amount = itsAmount)
     }
 }
