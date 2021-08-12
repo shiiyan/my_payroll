@@ -59,6 +59,8 @@ class Employee(
 
     fun getPayPeriodStartDate(payDate: Calendar): Calendar = itsSchedule.getPayPeriodStartDate(payDate)
 
+    fun getPayPeriodEndDate(payDate: Calendar): Calendar = itsSchedule.getPayPeriodEndDate(payDate)
+
     fun payday(pc: Paycheck) {
         val grossPay: Double = itsClassification.calculatePay(pc)
         val deductions: Double = itsAffiliation.calculateDeductions(pc)

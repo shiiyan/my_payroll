@@ -6,9 +6,9 @@ import payroll.factory.Factory
 import java.util.Calendar
 
 class SimpleFactory : Factory {
-    override fun makePaycheck(payPeriodStartDate: Calendar, payDate: Calendar): Paycheck =
+    override fun makePaycheck(payPeriodStartDate: Calendar, payPeriodEndDate: Calendar): Paycheck =
         SimplePaycheck(
             itsPayPeriodStartDate = payPeriodStartDate,
-            itsPayPeriodEndDate = payDate
+            itsPayPeriodEndDate = payPeriodEndDate
         )
 }

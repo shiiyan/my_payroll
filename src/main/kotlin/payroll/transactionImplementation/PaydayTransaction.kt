@@ -20,7 +20,10 @@ class PaydayTransaction(
         empIds.forEach { empId ->
             val e = PayrollDatabase.getEmployee(empId) ?: throw RuntimeException("No such employee.")
             if (e.isPayDate(itsPaydate)) {
-                val pc = itsFactory.makePaycheck(e.getPayPeriodStartDate(itsPaydate), itsPaydate)
+                val pc = itsFactory.makePaycheck(
+                    payPeriodStartDate = e.getPayPeriodStartDate(itsPaydate),
+                    payPeriodEndDate = e.getPayPeriodEndDate(itsPaydate)
+                )
                 itsPaycheck[empId] = pc
                 e.payday(pc)
             }

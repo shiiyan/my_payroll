@@ -11,6 +11,10 @@ class BiweeklySchedule : PaymentSchedule {
         return payPeriodStartDate
     }
 
+    override fun getPayPeriodEndDate(payDate: Calendar): Calendar {
+        TODO("Not yet implemented")
+    }
+
     override fun isPayDate(payDate: Calendar): Boolean =
         payDate.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY
 }

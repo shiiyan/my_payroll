@@ -386,13 +386,16 @@ class TestPayroll {
         val empId = 1
         val t = AddSalariedEmployeeTransaction(empId, "Bob", "Home", 1000.0)
         t.execute()
-        val payDate = GregorianCalendar(2021, Calendar.JULY, 31)
+        val payDate = GregorianCalendar(2021, Calendar.JULY, 25)
         val pt = PaydayTransaction(itsPaydate = payDate, itsFactory = SimpleFactory())
         pt.execute()
+        val payPeriodStartDate = GregorianCalendar(2021, Calendar.JUNE, 1)
+        val payPeriodEndDate = GregorianCalendar(2021, Calendar.JUNE, 30)
         validatePaycheck(
             pt = pt,
             empId = empId,
-            payDate = payDate,
+            payPeriodStartDate = payPeriodStartDate,
+            payPeriodEndDate = payPeriodEndDate,
             pay = 1000.0
         )
     }
@@ -400,12 +403,14 @@ class TestPayroll {
     private fun validatePaycheck(
         pt: PaydayTransaction,
         empId: Int,
-        payDate: Calendar,
+        payPeriodStartDate: Calendar,
+        payPeriodEndDate: Calendar,
         pay: Double
     ) {
         val pc = pt.getPaycheck(empId)
         assertNotNull(pc)
-        assertEquals(payDate, pc.getPayPeriodEndDate())
+        assertEquals(payPeriodStartDate, pc.getPayPeriodStartDate())
+        assertEquals(payPeriodEndDate, pc.getPayPeriodEndDate())
         assertEquals(pay, pc.getGrossPay())
         assertEquals("Hold", pc.getField("Deposition"))
         assertEquals(0.0, pc.getDeductions())
