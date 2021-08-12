@@ -2,6 +2,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import payrollDatabase.PayrollDatabase
+import payrollDomainImplementation.affiliation.NoAffiliation
 import payrollDomainImplementation.affiliation.UnionAffiliation
 import payrollDomainImplementation.paymentClassification.CommissionedClassification
 import payrollDomainImplementation.paymentClassification.HourlyClassification
@@ -26,6 +27,8 @@ import transactionImplementation.ChangeHourlyClassificationTransaction
 import transactionImplementation.ChangeMailMethodTransaction
 import transactionImplementation.ChangeNameTransaction
 import transactionImplementation.ChangeSalariedClassificationTransaction
+import transactionImplementation.ChangeUnaffiliatedTransaction
+import transactionImplementation.ChangeUnionMemberTransaction
 import transactionImplementation.DeleteEmployeeTransaction
 import java.lang.IllegalArgumentException
 import java.util.Calendar
@@ -330,5 +333,46 @@ class TestPayroll {
         val mm = e.itsPaymentMethod as MailMethod
         assertNotNull(mm)
         assertEquals("4080 El Cerrito Road", mm.itsAddress)
+    }
+
+    @Test
+    fun testChangeUnionMemberTransaction() {
+        println("TestChangeUnionMemberTransaction")
+        val empId = 2
+        val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
+        t.execute()
+        val memberId = 7734
+        val cut = ChangeUnionMemberTransaction(empId, memberId, 99.42)
+        cut.execute()
+
+        val e = PayrollDatabase.getEmployee(empId)
+        assertNotNull(e)
+        val ua = e.itsAffiliation as UnionAffiliation
+        assertNotNull(ua)
+        assertEquals(memberId, ua.itsMemberId)
+        assertEquals(99.42, ua.itsDues)
+        val um = PayrollDatabase.getUnionMember(memberId)
+        assertNotNull(um)
+        assertEquals(e, um)
+    }
+
+    @Test
+    fun testChangeUnaffiliatedTransaction() {
+        println("TestChangeUnaffiliatedTransaction")
+        val empId = 2
+        val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
+        t.execute()
+        val memberId = 7734
+        val cmt = ChangeUnionMemberTransaction(empId, memberId, 99.42)
+        cmt.execute()
+        val cut = ChangeUnaffiliatedTransaction(empId)
+        cut.execute()
+
+        val e = PayrollDatabase.getEmployee(empId)
+        assertNotNull(e)
+        val na = e.itsAffiliation as NoAffiliation
+        assertNotNull(na)
+        val um = PayrollDatabase.getUnionMember(memberId)
+        assertNull(um)
     }
 }

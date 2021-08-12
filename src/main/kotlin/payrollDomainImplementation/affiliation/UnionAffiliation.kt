@@ -9,6 +9,8 @@ class UnionAffiliation(
     val itsMemberId: Int,
     private val itsServiceCharges: MutableMap<Calendar, ServiceCharge> = mutableMapOf()
 ) : Affiliation {
+    override fun getMemberId() = itsMemberId
+
     override fun getServiceCharge(date: Calendar): Double? = itsServiceCharges[date]?.itsAmount
 
     fun addServiceCharge(date: Calendar, amount: Double) {

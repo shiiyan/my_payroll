@@ -26,6 +26,6 @@ class PayrollDatabase {
 
         fun getUnionMember(memberId: Int) = itsUnionMembers[memberId]
 
-        fun removeUnionMember(memberId: Int) = itsUnionMembers[memberId]
+        fun removeUnionMember(memberId: Int) = itsUnionMembers.remove(memberId)
     }
 }
