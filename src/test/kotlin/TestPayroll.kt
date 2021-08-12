@@ -1,12 +1,14 @@
-import java.lang.IllegalArgumentException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import payrollDatabase.PayrollDatabase
 import payrollDomainImplementation.affiliation.UnionAffiliation
 import payrollDomainImplementation.paymentClassification.CommissionedClassification
 import payrollDomainImplementation.paymentClassification.HourlyClassification
 import payrollDomainImplementation.paymentClassification.SalariedClassification
+import payrollDomainImplementation.paymentMethod.DirectMethod
 import payrollDomainImplementation.paymentMethod.HoldMethod
+import payrollDomainImplementation.paymentMethod.MailMethod
 import payrollDomainImplementation.paymentSchedule.BiweeklySchedule
 import payrollDomainImplementation.paymentSchedule.MonthlySchedule
 import payrollDomainImplementation.paymentSchedule.WeeklySchedule
@@ -18,16 +20,19 @@ import transactionImplementation.AddServiceChargeTransaction
 import transactionImplementation.AddTimeCardTransaction
 import transactionImplementation.ChangeAddressTransaction
 import transactionImplementation.ChangeCommissionedClassificationTransaction
+import transactionImplementation.ChangeDirectMethodTransaction
+import transactionImplementation.ChangeHoldMethodTransaction
 import transactionImplementation.ChangeHourlyClassificationTransaction
+import transactionImplementation.ChangeMailMethodTransaction
 import transactionImplementation.ChangeNameTransaction
 import transactionImplementation.ChangeSalariedClassificationTransaction
 import transactionImplementation.DeleteEmployeeTransaction
+import java.lang.IllegalArgumentException
 import java.util.Calendar
 import java.util.GregorianCalendar
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import org.junit.jupiter.api.assertThrows
 
 class TestPayroll {
     @BeforeEach
@@ -275,5 +280,55 @@ class TestPayroll {
         assertEquals(7.50, cc.itsCommissionRate)
         val bs = e.itsSchedule as BiweeklySchedule
         assertNotNull(bs)
+    }
+
+    @Test
+    fun testChangeDirectMethodTransaction() {
+        println("TestChangeDirectMethodTransaction")
+        val empId = 2
+        val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
+        t.execute()
+        val cdt = ChangeDirectMethodTransaction(empId, "FirstNational", "1058209")
+        cdt.execute()
+
+        val e = PayrollDatabase.getEmployee(empId)
+        assertNotNull(e)
+        val dm = e.itsPaymentMethod as DirectMethod
+        assertNotNull(dm)
+        assertEquals("FirstNational", dm.itsBank)
+        assertEquals("1058209", dm.itsAccount)
+    }
+
+    @Test
+    fun testChangeHoldMethodTransaction() {
+        println("TestChangeHoldMethodTransaction")
+        val empId = 2
+        val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
+        t.execute()
+        val cdt = ChangeDirectMethodTransaction(empId, "FirstNational", "1058209")
+        cdt.execute()
+        val cht = ChangeHoldMethodTransaction(empId)
+        cht.execute()
+
+        val e = PayrollDatabase.getEmployee(empId)
+        assertNotNull(e)
+        val hm = e.itsPaymentMethod as HoldMethod
+        assertNotNull(hm)
+    }
+
+    @Test
+    fun testChangeMailMethodTransaction() {
+        println("TestChangeMailMethodTransaction")
+        val empId = 2
+        val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
+        t.execute()
+        val cmt = ChangeMailMethodTransaction(empId, "4080 El Cerrito Road")
+        cmt.execute()
+
+        val e = PayrollDatabase.getEmployee(empId)
+        assertNotNull(e)
+        val mm = e.itsPaymentMethod as MailMethod
+        assertNotNull(mm)
+        assertEquals("4080 El Cerrito Road", mm.itsAddress)
     }
 }

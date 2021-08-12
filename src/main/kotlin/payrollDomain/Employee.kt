@@ -1,18 +1,15 @@
 package payrollDomain
 
 import payrollDomainImplementation.affiliation.NoAffiliation
-import payrollDomainImplementation.paymentClassification.SalariedClassification
-import payrollDomainImplementation.paymentMethod.HoldMethod
-import payrollDomainImplementation.paymentSchedule.MonthlySchedule
 import java.util.Calendar
 
 class Employee(
     val itsEmpId: Int,
     var itsName: String,
     var itsAddress: String,
-    var itsClassification: PaymentClassification,
-    var itsPaymentMethod: PaymentMethod,
-    var itsSchedule: PaymentSchedule,
+    var itsClassification: PaymentClassification?,
+    var itsPaymentMethod: PaymentMethod?,
+    var itsSchedule: PaymentSchedule?,
     var itsAffiliation: Affiliation
 ) {
     companion object {
@@ -24,9 +21,9 @@ class Employee(
             itsEmpId = empId,
             itsName = name,
             itsAddress = address,
-            itsClassification = SalariedClassification(0.00),
-            itsPaymentMethod = HoldMethod(),
-            itsSchedule = MonthlySchedule(),
+            itsClassification = null,
+            itsPaymentMethod = null,
+            itsSchedule = null,
             itsAffiliation = NoAffiliation()
         )
     }
@@ -55,18 +52,18 @@ class Employee(
         itsAffiliation = af
     }
 
-    fun isPayDate(payDate: Calendar): Boolean = itsSchedule.isPayDate(payDate)
+    fun isPayDate(payDate: Calendar): Boolean = itsSchedule?.isPayDate(payDate) ?: false
 
-    fun getPayPeriodStartDate(payDate: Calendar): Calendar = itsSchedule.getPayPeriodStartDate(payDate)
+    fun getPayPeriodStartDate(payDate: Calendar): Calendar? = itsSchedule?.getPayPeriodStartDate(payDate)
 
     fun payday(pc: Paycheck) {
-        val grossPay: Double = itsClassification.calculatePay(pc)
+        val grossPay: Double = itsClassification?.calculatePay(pc) ?: 0.00
         val deductions: Double = itsAffiliation.calculateDeductions(pc)
         val netPay = grossPay - deductions
 
         pc.setGrossPay(grossPay)
         pc.setDeductions(deductions)
         pc.setNetPay(netPay)
-        itsPaymentMethod.pay(pc)
+        itsPaymentMethod?.pay(pc)
     }
 }

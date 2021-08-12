@@ -8,6 +8,7 @@ class DirectMethod(
     val itsAccount: String
 ) : PaymentMethod {
     override fun pay(pc: Paycheck) {
-        TODO("Not yet implemented")
+        // TODO: Implement actual payment method.
+        println("Directly paid to $itsAccount of $itsBank.")
     }
 }
