@@ -1,0 +1,17 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:11.0.3-jdk-stretch
+    steps:
+      - checkout
+      - run:
+          name: build
+          command: ./gradlew build
+      - store_test_results:
+          path: build/test-results/
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
