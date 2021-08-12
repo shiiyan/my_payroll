@@ -13,7 +13,8 @@ abstract class AddEmployeeTransaction(
     private val itsAddress: String
 ) : Transaction {
     override fun validate() {
-        TODO("Not yet implemented")
+        require(itsName.isNotEmpty())
+        require(itsAddress.isNotEmpty())
     }
 
     override fun execute() {

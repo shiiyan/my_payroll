@@ -1,3 +1,4 @@
+import java.lang.IllegalArgumentException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import payrollDatabase.PayrollDatabase
@@ -26,6 +27,7 @@ import java.util.GregorianCalendar
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import org.junit.jupiter.api.assertThrows
 
 class TestPayroll {
     @BeforeEach
@@ -50,6 +52,28 @@ class TestPayroll {
         assertNotNull(ms)
         val hm = e.itsPaymentMethod as HoldMethod
         assertNotNull(hm)
+    }
+
+    @Test
+    fun testValidateAddSalariedEmployee() {
+        println("TestValidateAddSalariedEmployee")
+        run {
+            val empId = 1
+            val t = AddSalariedEmployeeTransaction(empId, "Bob", "Home", 1000.00)
+            t.validate()
+        }
+
+        run {
+            val empId = 2
+            val t = AddSalariedEmployeeTransaction(empId, "", "Home", 1000.00)
+            assertThrows<IllegalArgumentException> { t.validate() }
+        }
+
+        run {
+            val empId = 3
+            val t = AddSalariedEmployeeTransaction(empId, "Bob", "", 1000.00)
+            assertThrows<IllegalArgumentException> { t.validate() }
+        }
     }
 
     @Test
