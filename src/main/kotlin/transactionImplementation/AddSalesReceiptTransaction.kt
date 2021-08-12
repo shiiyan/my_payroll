@@ -1,7 +1,7 @@
 package transactionImplementation
 
 import payrollDatabase.PayrollDatabase
-import payrollImplementation.paymentClassification.CommissionedClassification
+import payrollDomainImplementation.paymentClassification.CommissionedClassification
 import transaction.Transaction
 import java.util.Calendar
 

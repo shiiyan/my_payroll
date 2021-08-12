@@ -1,12 +1,9 @@
-package payrollImplementation.paymentMethod
+package payrollDomainImplementation.paymentMethod
 
 import payrollDomain.Paycheck
 import payrollDomain.PaymentMethod
 
-class DirectMethod(
-    val itsBank: String,
-    val itsAccount: String
-) : PaymentMethod {
+class MailMethod : PaymentMethod {
     override fun pay(pc: Paycheck) {
         TODO("Not yet implemented")
     }

@@ -1,7 +1,7 @@
 package transactionImplementation
 
 import payrollDatabase.PayrollDatabase
-import payrollImplementation.affiliation.UnionAffiliation
+import payrollDomainImplementation.affiliation.UnionAffiliation
 import transaction.Transaction
 import java.util.Calendar
 

@@ -1,20 +1,23 @@
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import payrollDatabase.PayrollDatabase
-import payrollImplementation.affiliation.UnionAffiliation
-import payrollImplementation.paymentClassification.CommissionedClassification
-import payrollImplementation.paymentClassification.HourlyClassification
-import payrollImplementation.paymentClassification.SalariedClassification
-import payrollImplementation.paymentMethod.HoldMethod
-import payrollImplementation.paymentSchedule.BiweeklySchedule
-import payrollImplementation.paymentSchedule.MonthlySchedule
-import payrollImplementation.paymentSchedule.WeeklySchedule
+import payrollDomainImplementation.affiliation.UnionAffiliation
+import payrollDomainImplementation.paymentClassification.CommissionedClassification
+import payrollDomainImplementation.paymentClassification.HourlyClassification
+import payrollDomainImplementation.paymentClassification.SalariedClassification
+import payrollDomainImplementation.paymentMethod.HoldMethod
+import payrollDomainImplementation.paymentSchedule.BiweeklySchedule
+import payrollDomainImplementation.paymentSchedule.MonthlySchedule
+import payrollDomainImplementation.paymentSchedule.WeeklySchedule
+import transactionAbstraction.ChangeAddressTransaction
 import transactionImplementation.AddCommissionedEmployeeTransaction
 import transactionImplementation.AddHourlyEmployeeTransaction
 import transactionImplementation.AddSalariedEmployeeTransaction
 import transactionImplementation.AddSalesReceiptTransaction
 import transactionImplementation.AddServiceChargeTransaction
 import transactionImplementation.AddTimeCardTransaction
+import transactionImplementation.ChangeHourlyClassificationTransaction
+import transactionImplementation.ChangeNameTransaction
 import transactionImplementation.DeleteEmployeeTransaction
 import java.util.Calendar
 import kotlin.test.assertEquals
@@ -165,5 +168,51 @@ class TestPayroll {
         val ua = e.itsAffiliation as UnionAffiliation
         val sc = ua.getServiceCharge(defaultDate)
         assertEquals(12.95, sc)
+    }
+
+    @Test
+    fun testChangeNameTransaction() {
+        println("TestChangeName")
+        val empId = 2
+        val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
+        t.execute()
+        val cnt = ChangeNameTransaction(empId, "Bob")
+        cnt.execute()
+
+        val e = PayrollDatabase.getEmployee(empId)
+        assertNotNull(e)
+        assertEquals("Bob", e.itsName)
+    }
+
+    @Test
+    fun testChangeAddressTransaction() {
+        println("TestChangeAddress")
+        val empId = 2
+        val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
+        t.execute()
+        val cnt = ChangeAddressTransaction(empId, "Work")
+        cnt.execute()
+
+        val e = PayrollDatabase.getEmployee(empId)
+        assertNotNull(e)
+        assertEquals("Work", e.itsAddress)
+    }
+
+    @Test
+    fun testChangeHourlyClassificationTransaction() {
+        println("TestChangeHourlyClassification")
+        val empId = 3
+        val t = AddCommissionedEmployeeTransaction(empId, "Lance", "Home", 2500.00, 3.2)
+        t.execute()
+        val cht = ChangeHourlyClassificationTransaction(empId, 27.52)
+        cht.execute()
+
+        val e = PayrollDatabase.getEmployee(empId)
+        assertNotNull(e)
+        val hc = e.itsClassification as HourlyClassification
+        assertNotNull(hc)
+        assertEquals(27.52, hc.itsHourlyRate)
+        val ws = e.itsSchedule as WeeklySchedule
+        assertNotNull(ws)
     }
 }

@@ -1,4 +1,4 @@
-package payrollImplementation.affiliation
+package payrollDomainImplementation.affiliation
 
 import payrollDomain.Affiliation
 import payrollDomain.Paycheck

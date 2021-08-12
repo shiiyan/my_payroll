@@ -4,7 +4,7 @@ import payrollDatabase.PayrollDatabase
 import payrollDomain.Employee
 import payrollDomain.PaymentClassification
 import payrollDomain.PaymentSchedule
-import payrollImplementation.paymentMethod.HoldMethod
+import payrollDomainImplementation.paymentMethod.HoldMethod
 import transaction.Transaction
 
 abstract class AddEmployeeTransaction(

@@ -2,8 +2,8 @@ package transactionImplementation
 
 import payrollDomain.PaymentClassification
 import payrollDomain.PaymentSchedule
-import payrollImplementation.paymentClassification.HourlyClassification
-import payrollImplementation.paymentSchedule.WeeklySchedule
+import payrollDomainImplementation.paymentClassification.HourlyClassification
+import payrollDomainImplementation.paymentSchedule.WeeklySchedule
 import transactionAbstraction.AddEmployeeTransaction
 
 class AddHourlyEmployeeTransaction(

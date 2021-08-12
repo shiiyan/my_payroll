@@ -1,9 +1,9 @@
 package payrollDomain
 
-import payrollImplementation.affiliation.NoAffiliation
-import payrollImplementation.paymentClassification.SalariedClassification
-import payrollImplementation.paymentMethod.HoldMethod
-import payrollImplementation.paymentSchedule.MonthlySchedule
+import payrollDomainImplementation.affiliation.NoAffiliation
+import payrollDomainImplementation.paymentClassification.SalariedClassification
+import payrollDomainImplementation.paymentMethod.HoldMethod
+import payrollDomainImplementation.paymentSchedule.MonthlySchedule
 import java.util.Calendar
 
 class Employee(

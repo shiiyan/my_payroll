@@ -1,4 +1,4 @@
-package payrollImplementation.paymentClassification
+package payrollDomainImplementation.paymentClassification
 
 import java.util.Calendar
 

@@ -1,4 +1,4 @@
-package payrollImplementation.paymentSchedule
+package payrollDomainImplementation.paymentSchedule
 
 import payrollDomain.PaymentSchedule
 import java.util.Calendar

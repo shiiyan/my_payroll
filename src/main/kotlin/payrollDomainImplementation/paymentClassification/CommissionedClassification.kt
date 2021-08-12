@@ -1,4 +1,4 @@
-package payrollImplementation.paymentClassification
+package payrollDomainImplementation.paymentClassification
 
 import payrollDomain.Paycheck
 import payrollDomain.PaymentClassification

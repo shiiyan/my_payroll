@@ -1,13 +1,13 @@
-package payrollImplementation.paymentSchedule
+package payrollDomainImplementation.paymentSchedule
 
 import payrollDomain.PaymentSchedule
 import java.util.Calendar
 
-class WeeklySchedule : PaymentSchedule {
+class BiweeklySchedule : PaymentSchedule {
     override fun getPayPeriodStartDate(payDate: Calendar): Calendar {
         val payPeriodStartDate: Calendar = Calendar.getInstance()
         payPeriodStartDate.time = payDate.time
-        payPeriodStartDate.add(Calendar.DATE, -6)
+        payPeriodStartDate.add(Calendar.DATE, -13)
         return payPeriodStartDate
     }
 
