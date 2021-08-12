@@ -9,17 +9,18 @@ import payrollDomainImplementation.paymentMethod.HoldMethod
 import payrollDomainImplementation.paymentSchedule.BiweeklySchedule
 import payrollDomainImplementation.paymentSchedule.MonthlySchedule
 import payrollDomainImplementation.paymentSchedule.WeeklySchedule
-import transactionAbstraction.ChangeAddressTransaction
 import transactionImplementation.AddCommissionedEmployeeTransaction
 import transactionImplementation.AddHourlyEmployeeTransaction
 import transactionImplementation.AddSalariedEmployeeTransaction
 import transactionImplementation.AddSalesReceiptTransaction
 import transactionImplementation.AddServiceChargeTransaction
 import transactionImplementation.AddTimeCardTransaction
+import transactionImplementation.ChangeAddressTransaction
 import transactionImplementation.ChangeHourlyClassificationTransaction
 import transactionImplementation.ChangeNameTransaction
 import transactionImplementation.DeleteEmployeeTransaction
 import java.util.Calendar
+import java.util.GregorianCalendar
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -111,8 +112,7 @@ class TestPayroll {
         val empId = 2
         val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
         t.execute()
-        val defaultDate = Calendar.getInstance()
-        defaultDate.set(2021, 8, 11)
+        val defaultDate = GregorianCalendar(2021, Calendar.AUGUST, 11)
         val tct = AddTimeCardTransaction(defaultDate, 8.00, empId)
         tct.execute()
 
@@ -131,8 +131,7 @@ class TestPayroll {
         val empId = 3
         val t = AddCommissionedEmployeeTransaction(empId, "Lance", "Home", 2500.00, 3.2)
         t.execute()
-        val defaultDate = Calendar.getInstance()
-        defaultDate.set(2021, 8, 11)
+        val defaultDate = GregorianCalendar(2021, Calendar.AUGUST, 11)
         val srt = AddSalesReceiptTransaction(defaultDate, 25000.00, empId)
         srt.execute()
 
@@ -151,8 +150,7 @@ class TestPayroll {
         val empId = 2
         val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
         t.execute()
-        val defaultDate = Calendar.getInstance()
-        defaultDate.set(2021, 8, 11)
+        val defaultDate = GregorianCalendar(2021, Calendar.AUGUST, 11)
         val tct = AddTimeCardTransaction(defaultDate, 8.00, empId)
         tct.execute()
 

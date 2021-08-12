@@ -10,6 +10,10 @@ class AddSalesReceiptTransaction(
     private val itsAmount: Double,
     private val itsEmpId: Int
 ) : Transaction {
+    override fun validate() {
+        TODO("Not yet implemented")
+    }
+
     override fun execute() {
         val e = PayrollDatabase.getEmployee(empId = itsEmpId) ?: throw RuntimeException("No such employee.")
 

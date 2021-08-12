@@ -12,6 +12,10 @@ abstract class AddEmployeeTransaction(
     private val itsName: String,
     private val itsAddress: String
 ) : Transaction {
+    override fun validate() {
+        TODO("Not yet implemented")
+    }
+
     override fun execute() {
         val pc = getClassification()
         val ps = getSchedule()

@@ -10,6 +10,10 @@ class AddServiceChargeTransaction(
     private val itsDate: Calendar,
     private val itsAmount: Double
 ) : Transaction {
+    override fun validate() {
+        TODO("Not yet implemented")
+    }
+
     override fun execute() {
         val e = PayrollDatabase.getUnionMember(memberId = itsMemberId)
             ?: throw RuntimeException("No such employee.")
