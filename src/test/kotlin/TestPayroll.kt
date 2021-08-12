@@ -16,8 +16,10 @@ import transactionImplementation.AddSalesReceiptTransaction
 import transactionImplementation.AddServiceChargeTransaction
 import transactionImplementation.AddTimeCardTransaction
 import transactionImplementation.ChangeAddressTransaction
+import transactionImplementation.ChangeCommissionedClassificationTransaction
 import transactionImplementation.ChangeHourlyClassificationTransaction
 import transactionImplementation.ChangeNameTransaction
+import transactionImplementation.ChangeSalariedClassificationTransaction
 import transactionImplementation.DeleteEmployeeTransaction
 import java.util.Calendar
 import java.util.GregorianCalendar
@@ -212,5 +214,42 @@ class TestPayroll {
         assertEquals(27.52, hc.itsHourlyRate)
         val ws = e.itsSchedule as WeeklySchedule
         assertNotNull(ws)
+    }
+
+    @Test
+    fun testChangeSalariedClassificationTransaction() {
+        println("TestChangeSalariedClassification")
+        val empId = 3
+        val t = AddCommissionedEmployeeTransaction(empId, "Lance", "Home", 2500.00, 3.2)
+        t.execute()
+        val cst = ChangeSalariedClassificationTransaction(empId, 1500.00)
+        cst.execute()
+
+        val e = PayrollDatabase.getEmployee(empId)
+        assertNotNull(e)
+        val sc = e.itsClassification as SalariedClassification
+        assertNotNull(sc)
+        assertEquals(1500.00, sc.itsSalary)
+        val ms = e.itsSchedule as MonthlySchedule
+        assertNotNull(ms)
+    }
+
+    @Test
+    fun testChangeCommissionedClassificationTransaction() {
+        println("TestChangeCommissionedClassification")
+        val empId = 2
+        val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
+        t.execute()
+        val cct = ChangeCommissionedClassificationTransaction(empId, 1600.00, 7.50)
+        cct.execute()
+
+        val e = PayrollDatabase.getEmployee(empId)
+        assertNotNull(e)
+        val cc = e.itsClassification as CommissionedClassification
+        assertNotNull(cc)
+        assertEquals(1600.00, cc.itsSalary)
+        assertEquals(7.50, cc.itsCommissionRate)
+        val bs = e.itsSchedule as BiweeklySchedule
+        assertNotNull(bs)
     }
 }
