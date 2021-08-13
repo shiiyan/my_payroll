@@ -33,6 +33,6 @@ data class SimplePaycheck(
     }
 
     override fun getField(string: String): String? =
-        if (string == "Deposition") "Hold"
+        if (string == "Disposition") "Hold"
         else null
 }

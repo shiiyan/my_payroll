@@ -413,6 +413,110 @@ class TestPayroll {
         assertNull(pc)
     }
 
+    @Test
+    fun testPaySingleHourlyEmployeeNoTimeCards() {
+        println("TestPaySingleHourlyEmployeeNoTimeCards")
+        val empId = 2
+        val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
+        t.execute()
+        val payDate = GregorianCalendar(2021, Calendar.JULY, 9)
+        val pt = PaydayTransaction(itsPaydate = payDate, itsFactory = SimpleFactory())
+        pt.execute()
+        val payPeriodStartDate = GregorianCalendar(2021, Calendar.JUNE, 27)
+        val payPeriodEndDate = GregorianCalendar(2021, Calendar.JULY, 3)
+        validatePaycheck(pt, empId, payPeriodStartDate, payPeriodEndDate, 0.0)
+    }
+
+    @Test
+    fun testPaySingleHourlyEmployeeOneTimeCard() {
+        println("TestPaySingleHourlyEmployeeOneTimeCard")
+        val empId = 2
+        val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
+        t.execute()
+        val defaultDate = GregorianCalendar(2021, Calendar.JULY, 2)
+        val tct = AddTimeCardTransaction(defaultDate, 2.0, empId)
+        tct.execute()
+        val payDate = GregorianCalendar(2021, Calendar.JULY, 9)
+        val pt = PaydayTransaction(itsPaydate = payDate, itsFactory = SimpleFactory())
+        pt.execute()
+        val payPeriodStartDate = GregorianCalendar(2021, Calendar.JUNE, 27)
+        val payPeriodEndDate = GregorianCalendar(2021, Calendar.JULY, 3)
+        validatePaycheck(pt, empId, payPeriodStartDate, payPeriodEndDate, 30.5)
+    }
+
+    @Test
+    fun testPaySingleHourlyEmployeeOvertimeOneTimeCard() {
+        println("TestPaySingleHourlyEmployeeOvertimeOneTimeCard")
+        val empId = 2
+        val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
+        t.execute()
+        val defaultDate = GregorianCalendar(2021, Calendar.JULY, 2)
+        val tct = AddTimeCardTransaction(defaultDate, 9.0, empId)
+        tct.execute()
+        val payDate = GregorianCalendar(2021, Calendar.JULY, 9)
+        val pt = PaydayTransaction(itsPaydate = payDate, itsFactory = SimpleFactory())
+        pt.execute()
+        val payPeriodStartDate = GregorianCalendar(2021, Calendar.JUNE, 27)
+        val payPeriodEndDate = GregorianCalendar(2021, Calendar.JULY, 3)
+        validatePaycheck(pt, empId, payPeriodStartDate, payPeriodEndDate, (8 + 1.5) * 15.25)
+    }
+
+    @Test
+    fun testPaySingleHourlyEmployeeOnWrongDate() {
+        println("TestPaySingleHourlyEmployeeOnWrongDate")
+        val empId = 2
+        val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
+        t.execute()
+        val defaultDate = GregorianCalendar(2021, Calendar.JULY, 2)
+        val tct = AddTimeCardTransaction(defaultDate, 9.0, empId)
+        tct.execute()
+        val payDate = GregorianCalendar(2021, Calendar.JULY, 14)
+        val pt = PaydayTransaction(itsPaydate = payDate, itsFactory = SimpleFactory())
+        pt.execute()
+        val pc = pt.getPaycheck(empId)
+        assertNull(pc)
+    }
+
+    @Test
+    fun testPaySingleHourlyEmployeeTwoTimeCards() {
+        println("TestPaySingleHourlyEmployeeTwoTimeCards")
+        val empId = 2
+        val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
+        t.execute()
+        val workDate = GregorianCalendar(2021, Calendar.JULY, 2)
+        val tct = AddTimeCardTransaction(workDate, 2.0, empId)
+        tct.execute()
+        val workDate2 = GregorianCalendar(2021, Calendar.JULY, 1)
+        val tct2 = AddTimeCardTransaction(workDate2, 5.0, empId)
+        tct2.execute()
+        val payDate = GregorianCalendar(2021, Calendar.JULY, 9)
+        val pt = PaydayTransaction(itsPaydate = payDate, itsFactory = SimpleFactory())
+        pt.execute()
+        val payPeriodStartDate = GregorianCalendar(2021, Calendar.JUNE, 27)
+        val payPeriodEndDate = GregorianCalendar(2021, Calendar.JULY, 3)
+        validatePaycheck(pt, empId, payPeriodStartDate, payPeriodEndDate, 7 * 15.25)
+    }
+
+    @Test
+    fun testPaySingleHourlyEmployeeWithTimeCardsSpanningTwoPayPeriods() {
+        println("TestPaySingleHourlyEmployeeWithTimeCardsSpanningTwoPayPeriods")
+        val empId = 2
+        val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
+        t.execute()
+        val workDate = GregorianCalendar(2021, Calendar.JULY, 2)
+        val tct = AddTimeCardTransaction(workDate, 2.0, empId)
+        tct.execute()
+        val workDate2 = GregorianCalendar(2021, Calendar.JULY, 8)
+        val tct2 = AddTimeCardTransaction(workDate2, 5.0, empId)
+        tct2.execute()
+        val payDate = GregorianCalendar(2021, Calendar.JULY, 9)
+        val pt = PaydayTransaction(itsPaydate = payDate, itsFactory = SimpleFactory())
+        pt.execute()
+        val payPeriodStartDate = GregorianCalendar(2021, Calendar.JUNE, 27)
+        val payPeriodEndDate = GregorianCalendar(2021, Calendar.JULY, 3)
+        validatePaycheck(pt, empId, payPeriodStartDate, payPeriodEndDate, 2 * 15.25)
+    }
+
     private fun validatePaycheck(
         pt: PaydayTransaction,
         empId: Int,
@@ -425,7 +529,7 @@ class TestPayroll {
         assertEquals(payPeriodStartDate, pc.getPayPeriodStartDate())
         assertEquals(payPeriodEndDate, pc.getPayPeriodEndDate())
         assertEquals(pay, pc.getGrossPay())
-        assertEquals("Hold", pc.getField("Deposition"))
+        assertEquals("Hold", pc.getField("Disposition"))
         assertEquals(0.0, pc.getDeductions())
         assertEquals(pay, pc.getNetPay())
     }

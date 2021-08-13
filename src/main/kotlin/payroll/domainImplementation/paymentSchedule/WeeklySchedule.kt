@@ -7,12 +7,15 @@ class WeeklySchedule : PaymentSchedule {
     override fun getPayPeriodStartDate(payDate: Calendar): Calendar {
         val payPeriodStartDate: Calendar = Calendar.getInstance()
         payPeriodStartDate.time = payDate.time
-        payPeriodStartDate.add(Calendar.DATE, -6)
+        payPeriodStartDate.add(Calendar.DATE, -12)
         return payPeriodStartDate
     }
 
     override fun getPayPeriodEndDate(payDate: Calendar): Calendar {
-        TODO("Not yet implemented")
+        val payPeriodEndDate: Calendar = Calendar.getInstance()
+        payPeriodEndDate.time = payDate.time
+        payPeriodEndDate.add(Calendar.DATE, -6)
+        return payPeriodEndDate
     }
 
     override fun isPayDate(payDate: Calendar): Boolean =
