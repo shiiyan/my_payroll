@@ -400,6 +400,19 @@ class TestPayroll {
         )
     }
 
+    @Test
+    fun testPaySingleSalariedEmployeeOnWrongDate() {
+        println("TestPaySingleSalariedEmployee")
+        val empId = 1
+        val t = AddSalariedEmployeeTransaction(empId, "Bob", "Home", 1000.0)
+        t.execute()
+        val payDate = GregorianCalendar(2021, Calendar.JULY, 20)
+        val pt = PaydayTransaction(itsPaydate = payDate, itsFactory = SimpleFactory())
+        pt.execute()
+        val pc = pt.getPaycheck(empId)
+        assertNull(pc)
+    }
+
     private fun validatePaycheck(
         pt: PaydayTransaction,
         empId: Int,
