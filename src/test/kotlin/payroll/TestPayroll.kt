@@ -346,7 +346,7 @@ class TestPayroll {
         val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
         t.execute()
         val memberId = 7734
-        val cut = ChangeUnionMemberTransaction(empId, memberId, 99.42)
+        val cut = ChangeUnionMemberTransaction(empId, memberId, 9.42)
         cut.execute()
 
         val e = PayrollDatabase.getEmployee(empId)
@@ -354,7 +354,7 @@ class TestPayroll {
         val ua = e.itsAffiliation as UnionAffiliation
         assertNotNull(ua)
         assertEquals(memberId, ua.itsMemberId)
-        assertEquals(99.42, ua.itsDues)
+        assertEquals(9.42, ua.itsDues)
         val um = PayrollDatabase.getUnionMember(memberId)
         assertNotNull(um)
         assertEquals(e, um)
@@ -367,7 +367,7 @@ class TestPayroll {
         val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
         t.execute()
         val memberId = 7734
-        val cmt = ChangeUnionMemberTransaction(empId, memberId, 99.42)
+        val cmt = ChangeUnionMemberTransaction(empId, memberId, 9.42)
         cmt.execute()
         val cut = ChangeUnaffiliatedTransaction(empId)
         cut.execute()
@@ -396,7 +396,7 @@ class TestPayroll {
             empId = empId,
             payPeriodStartDate = payPeriodStartDate,
             payPeriodEndDate = payPeriodEndDate,
-            pay = 1000.0
+            grossPay = 1000.0
         )
     }
 
@@ -626,20 +626,182 @@ class TestPayroll {
         validatePaycheck(pt, empId, payPeriodStartDate, payPeriodEndDate, 2500.0 + (13000.0) * 0.032)
     }
 
+    @Test
+    fun testSalariedUnionMembersDues() {
+        println("TestSalariedUnionMembersDues")
+        val empId = 1
+        val t = AddSalariedEmployeeTransaction(empId, "Bob", "Home", 1000.0)
+        t.execute()
+        val memberId = 7734
+        val cut = ChangeUnionMemberTransaction(empId, memberId, 9.42)
+        cut.execute()
+        val payDate = GregorianCalendar(2021, Calendar.JULY, 25)
+        val pt = PaydayTransaction(itsPaydate = payDate, itsFactory = SimpleFactory())
+        pt.execute()
+        val payPeriodStartDate = GregorianCalendar(2021, Calendar.JUNE, 1)
+        val payPeriodEndDate = GregorianCalendar(2021, Calendar.JUNE, 30)
+        val fridays = 4
+        validatePaycheck(
+            pt = pt,
+            empId = empId,
+            payPeriodStartDate = payPeriodStartDate,
+            payPeriodEndDate = payPeriodEndDate,
+            grossPay = 1000.0,
+            deductions = 9.42 * fridays,
+            netPay = 1000.0 - (9.42 * fridays)
+        )
+    }
+
+    @Test
+    fun testPaySingleHourlyUnionMembersDues() {
+        println("TestPaySingleHourlyUnionMembersDues")
+        val empId = 2
+        val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
+        t.execute()
+        val workDate = GregorianCalendar(2021, Calendar.JULY, 2)
+        val tct = AddTimeCardTransaction(workDate, 2.0, empId)
+        tct.execute()
+        val workDate2 = GregorianCalendar(2021, Calendar.JULY, 1)
+        val tct2 = AddTimeCardTransaction(workDate2, 5.0, empId)
+        tct2.execute()
+        val memberId = 7734
+        val cut = ChangeUnionMemberTransaction(empId, memberId, 9.42)
+        cut.execute()
+        val payDate = GregorianCalendar(2021, Calendar.JULY, 9)
+        val pt = PaydayTransaction(itsPaydate = payDate, itsFactory = SimpleFactory())
+        pt.execute()
+        val payPeriodStartDate = GregorianCalendar(2021, Calendar.JUNE, 27)
+        val payPeriodEndDate = GregorianCalendar(2021, Calendar.JULY, 3)
+        validatePaycheck(
+            pt,
+            empId,
+            payPeriodStartDate,
+            payPeriodEndDate,
+            7 * 15.25,
+            9.42,
+            7 * 15.25 - 9.42
+        )
+    }
+
+    @Test
+    fun testPaySingleCommissionedUnionMemberDues() {
+        println("TestPaySingleCommissionedUnionMemberDues")
+        val empId = 3
+        val t = AddCommissionedEmployeeTransaction(empId, "Lance", "Home", 2500.0, 0.032)
+        t.execute()
+        val defaultDate = GregorianCalendar(2021, Calendar.JULY, 15)
+        val srt = AddSalesReceiptTransaction(defaultDate, 13000.0, empId)
+        srt.execute()
+        val defaultDate2 = GregorianCalendar(2021, Calendar.JULY, 20)
+        val srt2 = AddSalesReceiptTransaction(defaultDate2, 20000.0, empId)
+        srt2.execute()
+        val memberId = 7734
+        val cut = ChangeUnionMemberTransaction(empId, memberId, 9.42)
+        cut.execute()
+        val payDate = GregorianCalendar(2021, Calendar.JULY, 23)
+        val pt = PaydayTransaction(itsPaydate = payDate, itsFactory = SimpleFactory())
+        pt.execute()
+        val payPeriodStartDate = GregorianCalendar(2021, Calendar.JULY, 10)
+        val payPeriodEndDate = GregorianCalendar(2021, Calendar.JULY, 23)
+        val fridays = 2
+        validatePaycheck(
+            pt,
+            empId,
+            payPeriodStartDate,
+            payPeriodEndDate,
+            2500.0 + (13000.0 + 20000.0) * 0.032,
+            9.42 * fridays,
+            2500.0 + (13000.0 + 20000.0) * 0.032 - 9.42 * fridays
+        )
+    }
+
+    @Test
+    fun testPaySingleHourlyUnionMembersServiceCharges() {
+        println("TestPaySingleHourlyUnionMembersServiceCharges")
+        val empId = 2
+        val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
+        t.execute()
+        val workDate = GregorianCalendar(2021, Calendar.JULY, 2)
+        val tct = AddTimeCardTransaction(workDate, 2.0, empId)
+        tct.execute()
+        val workDate2 = GregorianCalendar(2021, Calendar.JULY, 1)
+        val tct2 = AddTimeCardTransaction(workDate2, 5.0, empId)
+        tct2.execute()
+        val memberId = 7734
+        val cut = ChangeUnionMemberTransaction(empId, memberId, 9.42)
+        cut.execute()
+        val defaultDate = GregorianCalendar(2021, Calendar.JUNE, 30)
+        val sct = AddServiceChargeTransaction(memberId, defaultDate, 12.95)
+        sct.execute()
+        val payDate = GregorianCalendar(2021, Calendar.JULY, 9)
+        val pt = PaydayTransaction(itsPaydate = payDate, itsFactory = SimpleFactory())
+        pt.execute()
+        val payPeriodStartDate = GregorianCalendar(2021, Calendar.JUNE, 27)
+        val payPeriodEndDate = GregorianCalendar(2021, Calendar.JULY, 3)
+        validatePaycheck(
+            pt,
+            empId,
+            payPeriodStartDate,
+            payPeriodEndDate,
+            7 * 15.25,
+            9.42 + 12.95,
+            7 * 15.25 - (9.42 + 12.95)
+        )
+    }
+
+    @Test
+    fun testPaySingleHourlyUnionMembersServiceChargesSpanningMultiplePeriods() {
+        println("TestPaySingleHourlyUnionMembersServiceChargesSpanningMultiplePeriods")
+        val empId = 2
+        val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
+        t.execute()
+        val workDate = GregorianCalendar(2021, Calendar.JULY, 2)
+        val tct = AddTimeCardTransaction(workDate, 2.0, empId)
+        tct.execute()
+        val workDate2 = GregorianCalendar(2021, Calendar.JULY, 1)
+        val tct2 = AddTimeCardTransaction(workDate2, 5.0, empId)
+        tct2.execute()
+        val memberId = 7734
+        val cut = ChangeUnionMemberTransaction(empId, memberId, 9.42)
+        cut.execute()
+        val defaultDate = GregorianCalendar(2021, Calendar.JUNE, 30)
+        val sct = AddServiceChargeTransaction(memberId, defaultDate, 12.95)
+        sct.execute()
+        val dateNextPeriod = GregorianCalendar(2021, Calendar.JULY, 20)
+        val sct2 = AddServiceChargeTransaction(memberId, dateNextPeriod, 12.95)
+        sct2.execute()
+        val payDate = GregorianCalendar(2021, Calendar.JULY, 9)
+        val pt = PaydayTransaction(itsPaydate = payDate, itsFactory = SimpleFactory())
+        pt.execute()
+        val payPeriodStartDate = GregorianCalendar(2021, Calendar.JUNE, 27)
+        val payPeriodEndDate = GregorianCalendar(2021, Calendar.JULY, 3)
+        validatePaycheck(
+            pt,
+            empId,
+            payPeriodStartDate,
+            payPeriodEndDate,
+            7 * 15.25,
+            9.42 + 12.95,
+            7 * 15.25 - (9.42 + 12.95)
+        )
+    }
+
     private fun validatePaycheck(
         pt: PaydayTransaction,
         empId: Int,
         payPeriodStartDate: Calendar,
         payPeriodEndDate: Calendar,
-        pay: Double
+        grossPay: Double,
+        deductions: Double? = null,
+        netPay: Double? = null
     ) {
         val pc = pt.getPaycheck(empId)
         assertNotNull(pc)
         assertEquals(payPeriodStartDate, pc.getPayPeriodStartDate())
         assertEquals(payPeriodEndDate, pc.getPayPeriodEndDate())
-        assertEquals(pay, pc.getGrossPay())
+        assertEquals(grossPay, pc.getGrossPay())
         assertEquals("Hold", pc.getField("Disposition"))
-        assertEquals(0.0, pc.getDeductions())
-        assertEquals(pay, pc.getNetPay())
+        assertEquals(deductions ?: 0.0, pc.getDeductions())
+        assertEquals(netPay ?: grossPay, pc.getNetPay())
     }
 }

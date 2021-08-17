@@ -18,6 +18,31 @@ class UnionAffiliation(
     }
 
     override fun calculateDeductions(pc: Paycheck): Double {
-        TODO("Not yet implemented")
+        var totalServiceCharge = 0.0
+        for (sc in itsServiceCharges.values) {
+            if (sc.itsDate in (pc.getPayPeriodStartDate()..pc.getPayPeriodEndDate())) {
+                totalServiceCharge += sc.itsAmount
+            }
+        }
+
+        val fridays = getNumberOfFridaysInPayPeriods(pc.getPayPeriodStartDate(), pc.getPayPeriodEndDate())
+        val totalDues = itsDues * fridays
+
+        return totalServiceCharge + totalDues
+    }
+
+    private fun getNumberOfFridaysInPayPeriods(payPeriodStart: Calendar, payPeriodEnd: Calendar): Int {
+        var fridays = 0
+        val cal = Calendar.getInstance()
+        cal.time = payPeriodStart.time
+        while (cal <= payPeriodEnd) {
+            if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
+                fridays++
+            }
+
+            cal.add(Calendar.DATE, 1)
+        }
+
+        return fridays
     }
 }
