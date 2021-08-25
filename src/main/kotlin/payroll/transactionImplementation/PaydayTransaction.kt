@@ -1,6 +1,6 @@
 package payroll.transactionImplementation
 
-import payroll.database.PayrollDatabase
+import payroll.database.GlobalDatabase
 import payroll.domain.Paycheck
 import payroll.factory.Factory
 import payroll.transaction.Transaction
@@ -16,9 +16,9 @@ class PaydayTransaction(
     }
 
     override fun execute() {
-        val empIds = PayrollDatabase.getAllEmployeeIds()
+        val empIds = GlobalDatabase.payrollDatabase.getAllEmployeeIds()
         empIds.forEach { empId ->
-            val e = PayrollDatabase.getEmployee(empId) ?: throw RuntimeException("No such employee.")
+            val e = GlobalDatabase.payrollDatabase.getEmployee(empId) ?: throw RuntimeException("No such employee.")
             if (e.isPayDate(itsPaydate)) {
                 val pc = itsFactory.makePaycheck(
                     payPeriodStartDate = e.getPayPeriodStartDate(itsPaydate),

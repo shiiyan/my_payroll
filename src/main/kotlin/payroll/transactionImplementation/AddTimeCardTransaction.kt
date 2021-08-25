@@ -1,6 +1,6 @@
 package payroll.transactionImplementation
 
-import payroll.database.PayrollDatabase
+import payroll.database.GlobalDatabase
 import payroll.domainImplementation.paymentClassification.HourlyClassification
 import payroll.transaction.Transaction
 import java.util.Calendar
@@ -15,7 +15,7 @@ class AddTimeCardTransaction(
     }
 
     override fun execute() {
-        val e = PayrollDatabase.getEmployee(empId = itsEmpId) ?: throw RuntimeException("No such employee.")
+        val e = GlobalDatabase.payrollDatabase.getEmployee(empId = itsEmpId) ?: throw RuntimeException("No such employee.")
 
         val hc = e.itsClassification as? HourlyClassification
             ?: throw RuntimeException("Tried to add timecard to non-hourly employee.")

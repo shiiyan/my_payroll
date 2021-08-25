@@ -3,7 +3,8 @@ package payroll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import payroll.database.PayrollDatabase
+import payroll.database.GlobalDatabase
+import payroll.database.InMemoryPayrollDatabase
 import payroll.domainImplementation.affiliation.NoAffiliation
 import payroll.domainImplementation.affiliation.UnionAffiliation
 import payroll.domainImplementation.paymentClassification.CommissionedClassification
@@ -44,7 +45,8 @@ import kotlin.test.assertNull
 class TestPayroll {
     @BeforeEach
     fun setUp() {
-        PayrollDatabase.clear()
+        GlobalDatabase.payrollDatabase = InMemoryPayrollDatabase()
+        GlobalDatabase.payrollDatabase.clear()
     }
 
     @Test
@@ -54,7 +56,7 @@ class TestPayroll {
         val t = AddSalariedEmployeeTransaction(empId, "Bob", "Home", 1000.0)
         t.execute()
 
-        val e = PayrollDatabase.getEmployee(empId)
+        val e = GlobalDatabase.payrollDatabase.getEmployee(empId)
         assertNotNull(e)
         assertEquals("Bob", e.itsName)
         val sc = e.itsClassification as SalariedClassification
@@ -95,7 +97,7 @@ class TestPayroll {
         val t = AddHourlyEmployeeTransaction(empId, "Bill", "Home", 15.25)
         t.execute()
 
-        val e = PayrollDatabase.getEmployee(empId)
+        val e = GlobalDatabase.payrollDatabase.getEmployee(empId)
         assertNotNull(e)
         assertEquals("Bill", e.itsName)
         val hc = e.itsClassification as HourlyClassification
@@ -114,7 +116,7 @@ class TestPayroll {
         val t = AddCommissionedEmployeeTransaction(empId, "Lance", "Home", 2500.0, 0.032)
         t.execute()
 
-        val e = PayrollDatabase.getEmployee(empId)
+        val e = GlobalDatabase.payrollDatabase.getEmployee(empId)
         assertNotNull(e)
         assertEquals("Lance", e.itsName)
         val cc = e.itsClassification as CommissionedClassification
@@ -134,13 +136,13 @@ class TestPayroll {
         val t = AddCommissionedEmployeeTransaction(empId, "Lance", "Home", 2500.0, 0.032)
         t.execute()
 
-        val e = PayrollDatabase.getEmployee(empId)
+        val e = GlobalDatabase.payrollDatabase.getEmployee(empId)
         assertNotNull(e)
 
         val dt = DeleteEmployeeTransaction(e.itsEmpId)
         dt.execute()
 
-        val de = PayrollDatabase.getEmployee(e.itsEmpId)
+        val de = GlobalDatabase.payrollDatabase.getEmployee(e.itsEmpId)
         assertNull(de)
     }
 
@@ -154,7 +156,7 @@ class TestPayroll {
         val tct = AddTimeCardTransaction(defaultDate, 8.0, empId)
         tct.execute()
 
-        val e = PayrollDatabase.getEmployee(empId)
+        val e = GlobalDatabase.payrollDatabase.getEmployee(empId)
         assertNotNull(e)
         val hc = e.itsClassification as HourlyClassification
         assertNotNull(hc)
@@ -173,7 +175,7 @@ class TestPayroll {
         val srt = AddSalesReceiptTransaction(defaultDate, 25000.0, empId)
         srt.execute()
 
-        val e = PayrollDatabase.getEmployee(empId)
+        val e = GlobalDatabase.payrollDatabase.getEmployee(empId)
         assertNotNull(e)
         val cc = e.itsClassification as CommissionedClassification
         assertNotNull(cc)
@@ -192,12 +194,12 @@ class TestPayroll {
         val tct = AddTimeCardTransaction(defaultDate, 8.0, empId)
         tct.execute()
 
-        val e = PayrollDatabase.getEmployee(empId)
+        val e = GlobalDatabase.payrollDatabase.getEmployee(empId)
         assertNotNull(e)
 
         val memberId = 86
         e.itsAffiliation = UnionAffiliation(12.50, memberId)
-        PayrollDatabase.addUnionMember(memberId, e)
+        GlobalDatabase.payrollDatabase.addUnionMember(memberId, e)
         val sct = AddServiceChargeTransaction(memberId, defaultDate, 12.95)
         sct.execute()
 
@@ -215,7 +217,7 @@ class TestPayroll {
         val cnt = ChangeNameTransaction(empId, "Bob")
         cnt.execute()
 
-        val e = PayrollDatabase.getEmployee(empId)
+        val e = GlobalDatabase.payrollDatabase.getEmployee(empId)
         assertNotNull(e)
         assertEquals("Bob", e.itsName)
     }
@@ -229,7 +231,7 @@ class TestPayroll {
         val cnt = ChangeAddressTransaction(empId, "Work")
         cnt.execute()
 
-        val e = PayrollDatabase.getEmployee(empId)
+        val e = GlobalDatabase.payrollDatabase.getEmployee(empId)
         assertNotNull(e)
         assertEquals("Work", e.itsAddress)
     }
@@ -243,7 +245,7 @@ class TestPayroll {
         val cht = ChangeHourlyClassificationTransaction(empId, 27.52)
         cht.execute()
 
-        val e = PayrollDatabase.getEmployee(empId)
+        val e = GlobalDatabase.payrollDatabase.getEmployee(empId)
         assertNotNull(e)
         val hc = e.itsClassification as HourlyClassification
         assertNotNull(hc)
@@ -261,7 +263,7 @@ class TestPayroll {
         val cst = ChangeSalariedClassificationTransaction(empId, 1500.0)
         cst.execute()
 
-        val e = PayrollDatabase.getEmployee(empId)
+        val e = GlobalDatabase.payrollDatabase.getEmployee(empId)
         assertNotNull(e)
         val sc = e.itsClassification as SalariedClassification
         assertNotNull(sc)
@@ -279,7 +281,7 @@ class TestPayroll {
         val cct = ChangeCommissionedClassificationTransaction(empId, 1600.0, 7.50)
         cct.execute()
 
-        val e = PayrollDatabase.getEmployee(empId)
+        val e = GlobalDatabase.payrollDatabase.getEmployee(empId)
         assertNotNull(e)
         val cc = e.itsClassification as CommissionedClassification
         assertNotNull(cc)
@@ -298,7 +300,7 @@ class TestPayroll {
         val cdt = ChangeDirectMethodTransaction(empId, "FirstNational", "1058209")
         cdt.execute()
 
-        val e = PayrollDatabase.getEmployee(empId)
+        val e = GlobalDatabase.payrollDatabase.getEmployee(empId)
         assertNotNull(e)
         val dm = e.itsPaymentMethod as DirectMethod
         assertNotNull(dm)
@@ -317,7 +319,7 @@ class TestPayroll {
         val cht = ChangeHoldMethodTransaction(empId)
         cht.execute()
 
-        val e = PayrollDatabase.getEmployee(empId)
+        val e = GlobalDatabase.payrollDatabase.getEmployee(empId)
         assertNotNull(e)
         val hm = e.itsPaymentMethod as HoldMethod
         assertNotNull(hm)
@@ -332,7 +334,7 @@ class TestPayroll {
         val cmt = ChangeMailMethodTransaction(empId, "4080 El Cerrito Road")
         cmt.execute()
 
-        val e = PayrollDatabase.getEmployee(empId)
+        val e = GlobalDatabase.payrollDatabase.getEmployee(empId)
         assertNotNull(e)
         val mm = e.itsPaymentMethod as MailMethod
         assertNotNull(mm)
@@ -349,13 +351,13 @@ class TestPayroll {
         val cut = ChangeUnionMemberTransaction(empId, memberId, 9.42)
         cut.execute()
 
-        val e = PayrollDatabase.getEmployee(empId)
+        val e = GlobalDatabase.payrollDatabase.getEmployee(empId)
         assertNotNull(e)
         val ua = e.itsAffiliation as UnionAffiliation
         assertNotNull(ua)
         assertEquals(memberId, ua.itsMemberId)
         assertEquals(9.42, ua.itsDues)
-        val um = PayrollDatabase.getUnionMember(memberId)
+        val um = GlobalDatabase.payrollDatabase.getUnionMember(memberId)
         assertNotNull(um)
         assertEquals(e, um)
     }
@@ -372,11 +374,11 @@ class TestPayroll {
         val cut = ChangeUnaffiliatedTransaction(empId)
         cut.execute()
 
-        val e = PayrollDatabase.getEmployee(empId)
+        val e = GlobalDatabase.payrollDatabase.getEmployee(empId)
         assertNotNull(e)
         val na = e.itsAffiliation as NoAffiliation
         assertNotNull(na)
-        val um = PayrollDatabase.getUnionMember(memberId)
+        val um = GlobalDatabase.payrollDatabase.getUnionMember(memberId)
         assertNull(um)
     }
 

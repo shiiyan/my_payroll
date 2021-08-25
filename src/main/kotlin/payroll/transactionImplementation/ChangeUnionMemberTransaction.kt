@@ -1,6 +1,6 @@
 package payroll.transactionImplementation
 
-import payroll.database.PayrollDatabase
+import payroll.database.GlobalDatabase
 import payroll.domain.Affiliation
 import payroll.domain.Employee
 import payroll.domainImplementation.affiliation.UnionAffiliation
@@ -18,9 +18,9 @@ class ChangeUnionMemberTransaction(
 
     override fun updateMembership(memberIdBef: Int?, e: Employee) {
         if (memberIdBef != null) {
-            PayrollDatabase.removeUnionMember(memberIdBef)
+            GlobalDatabase.payrollDatabase.removeUnionMember(memberIdBef)
         }
 
-        PayrollDatabase.addUnionMember(itsMemberId, e)
+        GlobalDatabase.payrollDatabase.addUnionMember(itsMemberId, e)
     }
 }

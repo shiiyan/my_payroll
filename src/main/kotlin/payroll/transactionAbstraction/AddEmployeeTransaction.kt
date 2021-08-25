@@ -1,6 +1,6 @@
 package payroll.transactionAbstraction
 
-import payroll.database.PayrollDatabase
+import payroll.database.GlobalDatabase
 import payroll.domain.Employee
 import payroll.domain.PaymentClassification
 import payroll.domain.PaymentSchedule
@@ -26,7 +26,7 @@ abstract class AddEmployeeTransaction(
         e.changeClassification(pc)
         e.changeSchedule(ps)
         e.changeMethod(pm)
-        PayrollDatabase.addEmployee(itsEmpId, e)
+        GlobalDatabase.payrollDatabase.addEmployee(itsEmpId, e)
     }
 
     abstract fun getClassification(): PaymentClassification

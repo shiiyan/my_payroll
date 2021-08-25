@@ -1,6 +1,6 @@
 package payroll.transactionAbstraction
 
-import payroll.database.PayrollDatabase
+import payroll.database.GlobalDatabase
 import payroll.domain.Employee
 import payroll.transaction.Transaction
 
@@ -12,7 +12,7 @@ abstract class ChangeEmployeeTransaction(
     }
 
     override fun execute() {
-        val e = PayrollDatabase.getEmployee(itsEmpId) ?: throw RuntimeException("No such employee.")
+        val e = GlobalDatabase.payrollDatabase.getEmployee(itsEmpId) ?: throw RuntimeException("No such employee.")
 
         change(e)
     }

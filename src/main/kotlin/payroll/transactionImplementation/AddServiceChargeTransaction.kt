@@ -1,6 +1,6 @@
 package payroll.transactionImplementation
 
-import payroll.database.PayrollDatabase
+import payroll.database.GlobalDatabase
 import payroll.domainImplementation.affiliation.UnionAffiliation
 import payroll.transaction.Transaction
 import java.util.Calendar
@@ -15,7 +15,7 @@ class AddServiceChargeTransaction(
     }
 
     override fun execute() {
-        val e = PayrollDatabase.getUnionMember(memberId = itsMemberId)
+        val e = GlobalDatabase.payrollDatabase.getUnionMember(memberId = itsMemberId)
             ?: throw RuntimeException("No such employee.")
 
         val ua = e.itsAffiliation as? UnionAffiliation

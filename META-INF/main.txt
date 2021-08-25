@@ -1,0 +1,9 @@
+AddEmp 1 "Bob" "Home" S 1000.00
+AddEmp 2 "Bill" "Home" H 15.25
+AddEmp 3 "Lance" "Home" C 2500.0 3.2
+ChgEmp 2 Name "Lance"
+ChgEmp 3 Address "Second Home"
+DelEmp 1
+SalesReceipt 3 2001/11/12 25000
+ServiceCharge 86 2001/10/31 12.95
+TimeCard 2 2001/10/31 8.0

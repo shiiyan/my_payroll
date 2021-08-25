@@ -1,6 +1,6 @@
 package payroll.transactionImplementation
 
-import payroll.database.PayrollDatabase
+import payroll.database.GlobalDatabase
 import payroll.transaction.Transaction
 
 class DeleteEmployeeTransaction(
@@ -11,6 +11,6 @@ class DeleteEmployeeTransaction(
     }
 
     override fun execute() {
-        PayrollDatabase.deleteEmployee(empId = itsEmpId)
+        GlobalDatabase.payrollDatabase.deleteEmployee(empId = itsEmpId)
     }
 }
